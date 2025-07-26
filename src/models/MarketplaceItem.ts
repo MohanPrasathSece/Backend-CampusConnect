@@ -16,7 +16,7 @@ const MarketplaceItemSchema = new Schema<IMarketplaceItem>(
     title: { type: String, required: true },
     description: { type: String, default: '' },
     price: { type: Number, required: true },
-    category: { type: String, enum: ['books', 'equipment', 'other'], default: 'other' },
+    category: { type: String, enum: ['books', 'equipment', 'electronics', 'other'], default: 'other' },
     contact: { type: String, required: true },
     seller: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     expiresAt: { type: Date, required: true },
