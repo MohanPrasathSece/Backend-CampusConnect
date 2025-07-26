@@ -5,6 +5,7 @@ export interface IMarketplaceItem extends Document {
   description: string;
   price: number; // 0 means free / donate
   category: 'books' | 'equipment' | 'electronics' | 'other';
+  image?: string;
   contact: string; // email / phone
   seller: mongoose.Types.ObjectId;
   expiresAt: Date;
@@ -18,6 +19,7 @@ const MarketplaceItemSchema = new Schema<IMarketplaceItem>(
     description: { type: String, default: '' },
     price: { type: Number, required: true },
     category: { type: String, enum: ['books', 'equipment', 'electronics', 'other'], default: 'other' },
+    image: { type: String },
     contact: { type: String, required: true },
     seller: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     expiresAt: { type: Date, required: true },

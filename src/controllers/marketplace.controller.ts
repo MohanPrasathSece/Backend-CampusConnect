@@ -9,7 +9,7 @@ export const listItems = async (_req: Request, res: Response) => {
 
 // POST /marketplace
 export const createItem = async (req: Request, res: Response) => {
-  const { title, description, price, category, contact, days } = req.body;
+  const { title, description, price, category, contact, days, image } = req.body;
   if(!title || !contact) return res.status(400).json({message:'Title and contact required'});
   const expiresAt = new Date(Date.now() + (Number(days)||7)*24*60*60*1000);
   const item = await MarketplaceItem.create({
@@ -17,6 +17,7 @@ export const createItem = async (req: Request, res: Response) => {
     description,
     price: Number(price||0),
     category,
+    image,
     contact,
     seller: req.user!.id,
     expiresAt,
