@@ -30,12 +30,16 @@ export const createOffer = async (req: Request, res: Response) => {
 };
 
 export const bookSlot = async (req: Request, res: Response) => {
-  const { slot } = req.body;
+  const { slot, phone } = req.body;
+  if(!phone){
+    return res.status(400).json({message:'Phone number is required'});
+  }
   const offerId = req.params.id;
   const booking = await SkillBooking.create({
     offer: offerId,
     student: req.user!.id,
     slot,
+    phone,
   });
   res.status(201).json(booking);
 };

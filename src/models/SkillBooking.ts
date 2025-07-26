@@ -4,6 +4,7 @@ export interface ISkillBooking {
   offer: Types.ObjectId;
   student: Types.ObjectId;
   slot: { day: string; start: string; end: string };
+  phone: string;
   status: 'pending' | 'accepted' | 'rejected';
   createdAt?: Date;
 }
@@ -17,6 +18,7 @@ const skillBookingSchema = new Schema<ISkillBooking>(
       start: { type: String, required: true },
       end: { type: String, required: true },
     },
+    phone: { type: String, required: true },
     status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
