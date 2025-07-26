@@ -42,6 +42,22 @@ export const addInterest = async (req: Request, res: Response) => {
 };
 
 // GET /marketplace/:id/interests (seller or admin)
+export const acceptInterest = async (req: Request, res: Response) => {
+  const { id, interestId } = req.params;
+  const item = await MarketplaceItem.findById(id);
+  if (!item) return res.status(404).json({ message: 'Not found' });
+  // @ts-ignore
+  if (item.seller.toString() !== req.user!.id && req.user!.role !== 'admin') {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+  // @ts-ignore
+  const interest = (item.interests as any).id(interestId);
+  if (!interest) return res.status(404).json({ message: 'Interest not found' });
+  interest.accepted = true;
+  await item.save();
+  res.json({ message: 'Accepted' });
+};
+
 export const getInterests = async (req: Request, res: Response) => {
   const item = await MarketplaceItem.findById(req.params.id).populate('interests.user', 'name');
   if (!item) return res.status(404).json({ message: 'Not found' });
