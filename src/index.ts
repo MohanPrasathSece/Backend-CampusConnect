@@ -1,4 +1,6 @@
 import express from 'express';
+import { createServer } from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -16,6 +18,19 @@ import pollRoutes from './routes/poll.routes.js';
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
+const io = new SocketIOServer(httpServer, {
+  cors: { origin: '*' }
+});
+
+io.on('connection', (socket) => {
+  socket.on('join-room', (room: string) => {
+    socket.join(room);
+  });
+  socket.on('chat-message', async (msg) => {
+    io.to(msg.room).emit('chat-message', msg);
+  });
+});
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
@@ -39,7 +54,7 @@ mongoose
   .connect(process.env.MONGO_URI as string)
   .then(() => {
     console.log('MongoDB connected');
-    app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+    httpServer.listen(PORT as number, () => console.log(`Server listening on ${PORT}`));
   })
   .catch((err) => {
     console.error('MongoDB connection error', err);
