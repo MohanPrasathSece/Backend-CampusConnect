@@ -4,11 +4,12 @@ export interface IMarketplaceItem extends Document {
   title: string;
   description: string;
   price: number; // 0 means free / donate
-  category: 'books' | 'equipment' | 'other';
+  category: 'books' | 'equipment' | 'electronics' | 'other';
   contact: string; // email / phone
   seller: mongoose.Types.ObjectId;
   expiresAt: Date;
   createdAt: Date;
+  interests: { user: mongoose.Types.ObjectId; phone: string; createdAt: Date }[];
 }
 
 const MarketplaceItemSchema = new Schema<IMarketplaceItem>(
@@ -20,6 +21,13 @@ const MarketplaceItemSchema = new Schema<IMarketplaceItem>(
     contact: { type: String, required: true },
     seller: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     expiresAt: { type: Date, required: true },
+    interests: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        phone: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );

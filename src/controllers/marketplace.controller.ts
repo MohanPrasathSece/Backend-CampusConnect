@@ -25,6 +25,32 @@ export const createItem = async (req: Request, res: Response) => {
 };
 
 // DELETE /marketplace/:id (owner only)
+// POST /marketplace/:id/interested
+export const addInterest = async (req: Request, res: Response) => {
+  const { phone } = req.body;
+  if (!phone) return res.status(400).json({ message: 'Phone required' });
+  const item = await MarketplaceItem.findById(req.params.id);
+  if (!item) return res.status(404).json({ message: 'Not found' });
+  if (item.seller.toString() === req.user!.id) return res.status(400).json({ message: 'Cannot mark interest on own item' });
+  if (item.interests?.some((i: any) => i.user.toString() === req.user!.id)) {
+    return res.status(400).json({ message: 'Already interested' });
+  }
+  item.interests.push({ user: req.user!.id as any, phone, createdAt: new Date() });
+  await item.save();
+  res.json({ message: 'Noted' });
+};
+
+// GET /marketplace/:id/interests (seller or admin)
+export const getInterests = async (req: Request, res: Response) => {
+  const item = await MarketplaceItem.findById(req.params.id).populate('interests.user', 'name');
+  if (!item) return res.status(404).json({ message: 'Not found' });
+  // @ts-ignore
+  if (item.seller.toString() !== req.user!.id && req.user!.role !== 'admin') {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+  res.json(item.interests);
+};
+
 export const deleteItem = async (req: Request, res: Response) => {
   const item = await MarketplaceItem.findById(req.params.id);
   if(!item) return res.status(404).json({message:'Not found'});
