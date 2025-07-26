@@ -3,13 +3,23 @@ import MarketplaceItem from '../models/MarketplaceItem';
 
 // GET /marketplace
 export const listItems = async (_req: Request, res: Response) => {
-  const items = await MarketplaceItem.find().sort({ createdAt: -1 });
-  res.json(items);
+  const items = await MarketplaceItem.find().sort({ createdAt: -1 }).populate('seller','email');
+  const mapped = items.map((i:any)=>({
+    ...i.toObject(),
+    sellerEmail: i.seller.email,
+    seller: i.seller._id
+  }));
+  res.json(mapped);
 };
 
 // POST /marketplace
 export const createItem = async (req: Request, res: Response) => {
   const { title, description, price, category, contact, days, image } = req.body;
+  // If an image file was uploaded, use its path
+  let imageUrl = image;
+  if(req.file){
+    imageUrl = `/uploads/${req.file.filename}`;
+  }
   if(!title || !contact) return res.status(400).json({message:'Title and contact required'});
   const expiresAt = new Date(Date.now() + (Number(days)||7)*24*60*60*1000);
   const item = await MarketplaceItem.create({
@@ -17,7 +27,7 @@ export const createItem = async (req: Request, res: Response) => {
     description,
     price: Number(price||0),
     category,
-    image,
+    image: imageUrl,
     contact,
     seller: req.user!.id,
     expiresAt,
