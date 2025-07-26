@@ -12,6 +12,7 @@ import complaintRoutes from './routes/complaint.routes.js';
 import skillRoutes from './routes/skill.routes.js';
 import techNewsRoutes from './routes/technews.routes.js';
 import pollRoutes from './routes/poll.routes.js';
+import marketplaceRoutes from './routes/marketplace.routes.js';
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use('/api/complaints', complaintRoutes);
 app.use('/api/skills', skillRoutes);
 app.use('/api/technews', techNewsRoutes);
 app.use('/api/polls', pollRoutes);
+app.use('/api/marketplace', marketplaceRoutes);
 
 // Root health check
 app.get('/', (_, res) => res.send('CampusLink API running'));
